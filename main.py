@@ -5,10 +5,11 @@
 # You can use any help necessary from the web even AI to solve this.
 # Make your code as readable as possible.
 
-debug = False
+debug = True
 ACE_VALUE = 14
 SPADE = 'S'
 family = ['S', 'H', 'C', 'D']
+face_cards = ['J', 'Q', 'K', 'A']
 
 
 def generate_deck() -> list:
@@ -43,9 +44,6 @@ def distribute_cards(cards:list,n_hands:int):
 
 
 hands = distribute_cards(cards, n_hands)
-# hard code for now
-
-
 
 def myprint(hands):
     if debug:
@@ -57,10 +55,9 @@ def myprint(hands):
 
 def modify(hands):
     l = list()
-    fc = ['J', 'Q', 'K', 'A']
     for card in hands:
         if card[1] >= 11:
-            l.append((card[0], fc[card[1]-11]))
+            l.append((card[0], face_cards[card[1]-11]))
     return l
 
 
@@ -82,30 +79,26 @@ def find_smallest_card(hand):
     if len(hand) == 0:
         return None
     m = min(hand, key=lambda x: x[1])
-    min_card = None
+    return find_inside_family(hand, m, family)
+
+
+def find_inside_family(hand,m,family):
+    m_card = None
     for f in family:
-        if min_card is not None:
+        if m_card is not None:
             break
         for card in hand:
             if m[0] == f and m[1] == card[1]:
-                min_card = card
+                m_card = card
                 break
-    return min_card
+    return m_card
 
 
 def find_highest_card(hand):
     if len(hand) == 0:
         return None
     m = max(hand, key=lambda x: x[1])
-    max_card = None
-    for f in ['D', 'C', 'H', 'S']:
-        if max_card is not None:
-            break
-        for card in hand:
-            if m[0] == f and m[1] == card[1]:
-                max_card = card
-                break
-    return max_card
+    return find_inside_family(hand,m,family[::-1])
 
 
 def remove(hand, card):
@@ -134,9 +127,14 @@ def play_hand(hand, cards_on_the_table)->bool: # use appropriate data types
 def play_round(hands,starting_player:int)->int:
     '''modify hands according to the game play and return next player'''
     hand = hands[starting_player]
+    if len(hand) == 0:
+        starting_player = starting_player + 1
+        if starting_player == n_hands-1:
+            starting_player = 0
+        return starting_player
     card = find_smallest_card(hands[starting_player])
     if debug:
-        print("Starting of Round Starting Player " , starting_player,  " Smallest Card",  card)
+        print("Starting of Round Starting Player ", starting_player,  " Smallest Card",  card)
     remove(hand, card)
 
     cards_on_the_table = list()
@@ -191,5 +189,5 @@ def play_game(hands):
 
 
 loser, hand = play_game(hands)
-print("loser " , loser,hand)
+print("loser ", loser,hand)
 
