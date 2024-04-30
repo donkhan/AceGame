@@ -58,6 +58,8 @@ def modify(hands):
     for card in hands:
         if card[1] >= 11:
             l.append((card[0], face_cards[card[1]-11]))
+        else:
+            l.append((card[0], card[1]))
     return l
 
 
