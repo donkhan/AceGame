@@ -45,11 +45,13 @@ def distribute_cards(cards:list,n_hands:int):
 
 hands = distribute_cards(cards, n_hands)
 
+
 def myprint(hands):
     if debug:
         i = 0
         for hand in hands:
-            print(i , "->",hand)
+            if len(hand) != 0:
+                print(i , "->", hand, len(hand))
             i = i + 1
 
 
@@ -131,12 +133,12 @@ def play_round(hands,starting_player:int)->int:
     hand = hands[starting_player]
     if len(hand) == 0:
         starting_player = starting_player + 1
-        if starting_player == n_hands-1:
+        if starting_player == n_hands:
             starting_player = 0
         return starting_player
     card = find_smallest_card(hands[starting_player])
     if debug:
-        print("Starting of Round Starting Player ", starting_player,  " Smallest Card",  card)
+        print("Starting of Round:  Starting Player ", starting_player,  " Smallest Card",  card)
     remove(hand, card)
 
     cards_on_the_table = list()
@@ -149,22 +151,20 @@ def play_round(hands,starting_player:int)->int:
             starting_player = 0
         flag = play_hand(hands[starting_player], cards_on_the_table)
         if flag is False:
-            starting_player = starting_player - 1
-            if starting_player == -1:
-                starting_player = n_hands - 1
+            # Bug Here
             if debug:
-                print("Cards  ", cards_on_the_table, "added to ", starting_player)
-            hand = hands[starting_player]
+                print("Cards  ", cards_on_the_table, "added to player ", ns)
+            hand = hands[ns]
             for c in cards_on_the_table:
                 hand.append(c)
-            return starting_player
+            return ns
         else:
             c = cards_on_the_table[len(cards_on_the_table)-1]
             if c[1] > card[1]:
                 card = c
                 ns = starting_player
     if debug:
-        print("Cards on Table ", cards_on_the_table)
+        print("Cards on Table ", cards_on_the_table , " are removed from the game")
         print("Next Round Starting Player ", ns)
     return ns
 
